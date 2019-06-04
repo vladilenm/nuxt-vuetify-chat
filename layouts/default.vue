@@ -9,7 +9,7 @@
           </v-list-tile-content>
 
           <v-list-tile-action>
-            <v-icon :color="u.id === 2 ? 'primary' : 'grey'">chat_bubble</v-icon>
+            <v-icon :color="u.id === user.id ? 'primary' : 'grey'">chat_bubble</v-icon>
           </v-list-tile-action>
         </v-list-tile>
       </v-list>
@@ -33,15 +33,16 @@
 import { mapState, mapMutations } from "vuex";
 export default {
   data: () => ({
-    drawer: true,
-    users: [{ id: 1, name: "User 1" }, { id: 2, name: "User 2" }]
+    drawer: true
   }),
-  computed: mapState(["user"]),
+  computed: mapState(["user", "users"]),
   methods: {
     ...mapMutations(["clearData"]),
     exit() {
-      this.$router.push("/?message=leftChat");
-      this.clearData();
+      this.$socket.emit("userLeft", this.user.id, () => {
+        this.$router.push("/?message=leftChat");
+        this.clearData();
+      });
     }
   }
 };
